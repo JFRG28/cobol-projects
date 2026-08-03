@@ -10,8 +10,9 @@
        $IF UNISYS DEFINED
             SELECT LISTA ASSIGN TO DISK.
        $ELSE
-            SELECT LISTA ASSIGN TO "/home/paco/cobol-projects/nombres.txt"
-                         ORGANIZATION IS LINE SEQUENTIAL.
+            SELECT LISTA ASSIGN TO 
+            "/home/paco/cobol-projects/nombres.txt"
+            ORGANIZATION IS LINE SEQUENTIAL.
        $END-IF
        DATA DIVISION.
        FILE SECTION.
@@ -45,7 +46,7 @@
        1000-INICIO.
            $IF UNISYS DEFINED
                       CHANGE ATTRIBUTE TITLE OF LISTA TO
-                      "/home/paco/cobol-projects/nombres/txt.".
+                      "JFRG/FILE/INTE/LST/TXT.".
                       IF ATTRIBUTE RESIDENT OF LISTA = VALUE TRUE
                           OPEN INPUT LISTA
                           PERFORM 9999-LEE-LISTA
@@ -56,7 +57,7 @@
            $ELSE
                       OPEN INPUT LISTA
                       PERFORM 9999-LEE-LISTA
-                      SET WK-INDICE TO 0
+                      SET WK-INDICE TO 0.
            $END-IF
        2000-PROCESO.
            PERFORM 2500-LLENA-TABLA UNTIL WKS-EOF-LISTA = 1
@@ -64,7 +65,7 @@
            DISPLAY "TOTAL DE REGISTROS: " WKS-TOTAL-REGISTROS
            PERFORM 2500-DESPLIEGA-LISTA
                    VARYING WL-INDICE FROM 1 BY 1 
-                   UNTIL WL-INDICE > WKS-TOTAL-REGISTROS
+                   UNTIL WL-INDICE > WKS-TOTAL-REGISTROS.
        2500-LLENA-TABLA.
            SET WK-INDICE UP BY 1
            MOVE REG-NUMLISTA TO WS-NUMLISTA (WK-INDICE)
