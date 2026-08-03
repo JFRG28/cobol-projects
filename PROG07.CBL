@@ -1,0 +1,64 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. PROG07.
+       AUTHOR. JOSE FRANCISCO RODRIGUEZ. GARCIA.
+       DATE-WRITTEN. 27-07-2026.
+      *REFRESCANDO CONOCIMIENTOS DE COBOL74 UNISYS
+       SECURITY. FOREVER.
+       ENVIRONMENT DIVISION.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+           01 WKS-EOA PIC 9(02) VALUE IS 0.
+           01 WKS-EOB PIC 9(02) VALUE IS 0.
+           01 WKS-LINEA-CAPTURA.
+               02 WKS-NUMLISTA     PIC 9(04).
+               02 WKS-NOMBRE       PIC X(18).
+               02 WKS-APELLIDOS    PIC X(20).
+               02 WKS-NUMGPO       PIC X(02).
+           01 WS-LISTA-PARTICIPANTES.
+               03 WS-LISTA OCCURS 5 TIMES
+                   ASCENDING KEY IS WS-NUMLISTA
+                   INDEXED BY WK-INDICE.
+                   05 WS-NUMLISTA     PIC 9(04).
+                   05 WS-NOMBRE       PIC X(18).
+                   05 WS-APELLIDOS    PIC X(20).
+                   05 WS-NUMGPO       PIC X(02).
+           01 WKS-MAX-ELEMENTOS PIC 9(06) VALUE IS 0.
+       PROCEDURE DIVISION.
+       0000-PRINCIPAL.
+           SET WK-INDICE TO 0
+           COMPUTE WKS-MAX-ELEMENTOS = 
+           FUNCTION LENGTH(WS-LISTA-PARTICIPANTES)/
+           FUNCTION LENGTH(WS-LISTA(1))
+           DISPLAY "INGRESA " WKS-MAX-ELEMENTOS
+           DISPLAY "REGISTROS COMPLETOS DE PARTICIPANTES" 
+           PERFORM 1000-LLENAR-LISTA UNTIL WK-INDICE > 4 OR 
+                                           WKS-EOA = 1
+           PERFORM 2000-INGRESAR-DATO UNTIL WKS-EOB = 1
+           STOP RUN.
+       1000-LLENAR-LISTA.
+           ACCEPT WKS-LINEA-CAPTURA
+           IF WKS-NUMLISTA > 0
+               SET WK-INDICE UP BY 1
+               MOVE WKS-NUMLISTA   TO WS-NUMLISTA  (WK-INDICE)
+               MOVE WKS-NOMBRE     TO WS-NOMBRE    (WK-INDICE)
+               MOVE WKS-APELLIDOS  TO WS-APELLIDOS (WK-INDICE)
+               MOVE WKS-NUMGPO     TO WS-NUMGPO    (WK-INDICE)
+           ELSE
+               MOVE 1 TO WKS-EOA.
+       2000-INGRESAR-DATO.
+           DISPLAY "QUE NUMERO DE LISTA REQUIERES?"
+           DISPLAY "(0 PARA TERMINAR)"
+           ACCEPT WKS-NUMLISTA
+           IF WKS-NUMLISTA > 0
+               PERFORM 2100-BUSCAR-REGISTRO
+           ELSE
+               MOVE 1 TO WKS-EOB.
+       2100-BUSCAR-REGISTRO.
+      *     SET WK-INDICE TO 0
+           SEARCH ALL WS-LISTA AT END
+               DISPLAY "NO EXISTE REG. NUM.: " WKS-NUMLISTA
+           WHEN 
+               WS-NUMLISTA (WK-INDICE) = WKS-NUMLISTA
+               DISPLAY "REGISTRO: "    WS-NUMLISTA (WK-INDICE)
+                          ".- : "      WS-APELLIDOS (WK-INDICE)
+                          "     "      WS-NOMBRE (WK-INDICE).

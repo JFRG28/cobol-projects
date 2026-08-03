@@ -1,0 +1,13 @@
+# 1. Ignorar TODO en este directorio por defecto
+/*
+
+# 2. Permitir explícitamente solo archivos fuente COBOL y de configuración
+!*.CBL
+!*.cbl
+!*.cob
+!*.COB
+!.gitignore
+!README.md
+
+# 3. Excepciones para carpetas si llegas a crear subcarpetas con fuentes
+!*/
