@@ -1,0 +1,51 @@
+{
+  "Unisys Select File-Control": {
+    "prefix": "unisys-select",
+    "body": [
+      "      $IF UNISYS DEFINED",
+      "           SELECT ${1:NOMBRE_LOGICO} ASSIGN TO DISK.",
+      "      $ELSE",
+      "           SELECT ${1:NOMBRE_LOGICO} ASSIGN TO \"${2:/home/paco/cobol-projects/nombres.txt}\"",
+      "                        ORGANIZATION IS LINE SEQUENTIAL.",
+      "      $END-IF"
+    ],
+    "description": "Inserta un SELECT condicional para Unisys DISK o archivo plano Linux"
+  },
+  "Unisys FD Section": {
+    "prefix": "unisys-fd",
+    "body": [
+      "       FD  ${1:NOMBRE_LOGICO}.",
+      "      $IF UNISYS DEFINED",
+      "           VALUE OF DEPENDENTSPECS IS TRUE.",
+      "      $END-IF"
+    ],
+    "description": "Inserta FD con cláusula DEPENDENTSPECS de Unisys MCP"
+  },
+  "Unisys Open / Check Resident": {
+    "prefix": "unisys-open",
+    "body": [
+      "      $IF UNISYS DEFINED",
+      "           CHANGE ATTRIBUTE TITLE OF ${1:NOMBRE_LOGICO} TO",
+      "           \"${2:FLH/FILE/INTE/LST/TXT.}\".",
+      "           IF ATTRIBUTE RESIDENT OF ${1:NOMBRE_LOGICO} = VALUE TRUE",
+      "               OPEN INPUT ${1:NOMBRE_LOGICO}",
+      "               PERFORM ${3:9999-LEE-LISTA}",
+      "           ELSE",
+      "               DISPLAY \"NO EXISTE EL ARCHIVO ${1:NOMBRE_LOGICO}\"",
+      "               MOVE 1 TO ${4:WKS-EOF-LISTA}",
+      "           END-IF",
+      "      $ELSE",
+      "           OPEN INPUT ${1:NOMBRE_LOGICO}",
+      "           PERFORM ${3:9999-LEE-LISTA}",
+      "      $END-IF"
+    ],
+    "description": "Inserta apertura de archivo con validacion ATTRIBUTE RESIDENT de Unisys MCP"
+  },
+  "Unisys Close File": {
+    "prefix": "unisys-close",
+    "body": [
+      "           CLOSE ${1:NOMBRE_LOGICO}."
+    ],
+    "description": "Cierre de archivo estándar"
+  }
+}

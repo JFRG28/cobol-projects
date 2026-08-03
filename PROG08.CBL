@@ -7,11 +7,18 @@
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT LISTA ASSIGN TO DISK.
+       $IF UNISYS DEFINED
+            SELECT LISTA ASSIGN TO DISK.
+       $ELSE
+            SELECT LISTA ASSIGN TO "/home/paco/cobol-projects/nombres.txt"
+                         ORGANIZATION IS LINE SEQUENTIAL.
+       $END-IF
        DATA DIVISION.
        FILE SECTION.
-       FD LISTA
-          VALUE OF DEPENDENTSPECS IS TRUE.
+       FD  LISTA.
+       $IF UNISYS DEFINED
+                  VALUE OF DEPENDENTSPECS IS TRUE.
+       $END-IF
        01 REG-LISTA.
            02 REG-NUMLISTA     PIC 9(04).
            02 REG-NOMBRE       PIC X(18).
@@ -36,15 +43,21 @@
            PERFORM 3000-TERMINA
            STOP RUN.
        1000-INICIO.
-           CHANGE ATTRIBUTE TITLE OF LISTA TO 
-           "/home/paco/cobol-projects/nombres.txt"
-           IF ATTRIBUTE RESIDENT OF LISTA = VALUE TRUE
-               OPEN INPUT LISTA
-               PERFORM 9999-LEE-LISTA
-               SET WK-INDICE TO 0
-           ELSE
-               DISPLAY "NO EXISTE EL ARCHIVO LISTA: "
-               MOVE 1 TO WKS-EOF-LISTA.
+           $IF UNISYS DEFINED
+                      CHANGE ATTRIBUTE TITLE OF LISTA TO
+                      "/home/paco/cobol-projects/nombres/txt.".
+                      IF ATTRIBUTE RESIDENT OF LISTA = VALUE TRUE
+                          OPEN INPUT LISTA
+                          PERFORM 9999-LEE-LISTA
+                          SET WK-INDICE TO 0
+                      ELSE
+                          DISPLAY "NO EXISTE EL ARCHIVO LISTA: "
+                          MOVE 1 TO WKS-EOF-LISTA.
+           $ELSE
+                      OPEN INPUT LISTA
+                      PERFORM 9999-LEE-LISTA
+                      SET WK-INDICE TO 0
+           $END-IF
        2000-PROCESO.
            PERFORM 2500-LLENA-TABLA UNTIL WKS-EOF-LISTA = 1
            MOVE WS-NUMLISTA (WK-INDICE) TO WKS-TOTAL-REGISTROS
@@ -68,3 +81,4 @@
            CLOSE LISTA.
        9999-LEE-LISTA.
            READ LISTA AT END MOVE 1 TO WKS-EOF-LISTA.
+      
