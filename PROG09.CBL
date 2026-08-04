@@ -1,5 +1,5 @@
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. PROG07.
+       PROGRAM-ID. PROG09.
        AUTHOR. JOSE FRANCISCO RODRIGUEZ. GARCIA.
        DATE-WRITTEN. 03-08-2026.
       *REFRESCANDO CONOCIMIENTOS DE COBOL74 UNISYS
@@ -31,18 +31,29 @@
            02 REG-NUMGPO       PIC X(02).
        FD REPORTE REPORT IS LISTADO.
        WORKING-STORAGE SECTION.
-           01 WKS-EOF-LISTA    PIC 9(02) VALUE IS 0.
-           01 WS-CUANTOS       PIC 9(03).
-           01 WS-HORAS         PIC 9(10).
-           01 WS-CURRENT-DATE.
-              02 WS-CURRENT-YY          PIC 99.
-              02 WS-CURRENT-MM          PIC 99.
-              02 WS-CURRENT-DD          PIC 99.
-           01 WS-TODAYS-DATE.
-              02 WS-TODAYS-YY   PIC 99.
-              02 WS-TODAYS-MM   PIC 99.
-              02 WS-TODAYS-DD   PIC 99.
-           01 WS-HOLD-GPO       PIC X(02).
+       01 WKS-EOF-LISTA    PIC 9(02) VALUE IS 0.
+       01 WS-RAW-TIME.
+          02 WS-TIME-HH          PIC 99.
+          02 WS-TIME-MM          PIC 99.
+          02 WS-TIME-SS          PIC 99.
+          02 WS-TIME-HS          PIC 99.
+       01 WS-FORMATTED-TIME.
+          02 WS-FMT-HH           PIC 99.
+          02 FILLER              PIC X VALUE ":".
+          02 WS-FMT-MM           PIC 99.
+          02 FILLER              PIC X VALUE ":".
+          02 WS-FMT-SS           PIC 99.
+       01 WS-CURRENT-DATE.
+          02 WS-CURRENT-YY          PIC 99.
+          02 WS-CURRENT-MM          PIC 99.
+          02 WS-CURRENT-DD          PIC 99.
+       01 WS-TODAYS-DATE.
+          02 WS-TODAYS-DD   PIC 99.
+          02 FILLER         PIC X VALUE "/".
+          02 WS-TODAYS-MM   PIC 99.
+          02 FILLER         PIC X VALUE "/".
+          02 WS-TODAYS-YY   PIC 99.
+       01 WS-HOLD-GPO       PIC X(02).
        REPORT SECTION.
         RD LISTADO
            PAGE LIMIT      058
@@ -57,14 +68,14 @@
              "GRUPO CAPACITACION STEFANINI - COBOL74".
           10 RD-IMPRE-TITULO-02 LINE 003.
              15 COLUMN 001 PIC X(14) VALUE "FECHA PROCESO:". 
-             15 COLUMN 016 PIC 99/99/99 SOURCE WS-TODAYS-DATE.
+             15 COLUMN 016 PIC X(08) SOURCE WS-TODAYS-DATE.
              15 COLUMN 060 PIC X(25) VALUE 
              "SISTEMA DE CAPACITACIONES".
              15 COLUMN 120 PIC X(7) VALUE "HOJA:".
              15 COLUMN 127 PIC Z,ZZZ SOURCE PAGE-COUNTER.
           10 RD-IMPRE-TITULO-03 LINE 004.
              15 COLUMN 001 PIC X(6) VALUE "HORA:".
-             15 COLUMN 016 PIC 9(10) SOURCE WS-HORAS.
+             15 COLUMN 016 PIC X(08) SOURCE WS-FORMATTED-TIME.
              15 COLUMN 047 PIC X(40) VALUE 
              "L I S T A   D E   A S I S T E N C I A".
           10 RD-IMPRE-TITULO-04 LINE 006.
@@ -93,10 +104,10 @@
            PERFORM 3000-TERMINA
            STOP RUN.
        1000-INICIO.
-           ACCEPT WS-CURRENT-DATE FROM DATE
-           MOVE WS-CURRENT-MM TO WS-TODAYS-MM
-           MOVE WS-CURRENT-DD TO WS-TODAYS-DD
-           MOVE WS-CURRENT-YY TO WS-TODAYS-YY
+            ACCEPT WS-CURRENT-DATE FROM DATE
+            MOVE WS-CURRENT-DD TO WS-TODAYS-DD
+            MOVE WS-CURRENT-MM TO WS-TODAYS-MM
+            MOVE WS-CURRENT-YY TO WS-TODAYS-YY
            $IF UNISYS DEFINED
                       CHANGE ATTRIBUTE TITLE OF LISTA TO
                       "JFRG/FILE/INTE/99902E02/01/171127/LST/TXT.".
@@ -111,16 +122,21 @@
            $ELSE
                       OPEN INPUT LISTA
                       PERFORM 9999-LEE-LISTA
-           $END-IF           
-                      ACCEPT WS-HORAS FROM TIME
+           $END-IF
+                      ACCEPT WS-RAW-TIME FROM TIME
+                      MOVE WS-TIME-HH TO WS-FMT-HH
+                      MOVE WS-TIME-MM TO WS-FMT-MM
+                      MOVE WS-TIME-SS TO WS-FMT-SS
                       OPEN OUTPUT REPORTE
                       INITIATE LISTADO.
        2000-PROCESO.
            PERFORM 2500-GENERA-REPORTE UNTIL WKS-EOF-LISTA = 1
            TERMINATE LISTADO.
        2500-GENERA-REPORTE.
-           IF WKS-EOF-LISTA = 0 AND REG-NUMGPO NOT = SPACES
-               GENERATE RD-IMPRE-DETALLE
+           IF WKS-EOF-LISTA = 0 
+               IF REG-NUMGPO NOT = SPACES
+                   GENERATE RD-IMPRE-DETALLE
+               END-IF
                PERFORM 9999-LEE-LISTA
            END-IF.
        3000-TERMINA.
