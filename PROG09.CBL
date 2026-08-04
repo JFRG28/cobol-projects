@@ -42,6 +42,7 @@
               02 WS-TODAYS-YY   PIC 99.
               02 WS-TODAYS-MM   PIC 99.
               02 WS-TODAYS-DD   PIC 99.
+           01 WS-HOLD-GPO       PIC X(02).
        REPORT SECTION.
         RD LISTADO
            PAGE LIMIT      058
@@ -118,7 +119,7 @@
            PERFORM 2500-GENERA-REPORTE UNTIL WKS-EOF-LISTA = 1
            TERMINATE LISTADO.
        2500-GENERA-REPORTE.
-           IF WKS-EOF-LISTA = 0
+           IF WKS-EOF-LISTA = 0 AND REG-NUMGPO NOT = SPACES
                GENERATE RD-IMPRE-DETALLE
                PERFORM 9999-LEE-LISTA
            END-IF.
@@ -126,6 +127,9 @@
            CLOSE LISTA.
            CLOSE REPORTE.
        9999-LEE-LISTA.
+           MOVE REG-NUMGPO TO WS-HOLD-GPO
            READ LISTA AT END 
-           MOVE 1 TO WKS-EOF-LISTA.
+               MOVE 1 TO WKS-EOF-LISTA
+               MOVE WS-HOLD-GPO TO REG-NUMGPO
+           END-READ.
       
