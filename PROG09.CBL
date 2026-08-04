@@ -34,7 +34,6 @@
            01 WKS-EOF-LISTA    PIC 9(02) VALUE IS 0.
            01 WS-CUANTOS       PIC 9(03).
            01 WS-HORAS         PIC 9(10).
-           01 WS-LAST-GPO       PIC X(02) VALUE SPACES.
            01 WS-CURRENT-DATE.
               02 WS-CURRENT-YY          PIC 99.
               02 WS-CURRENT-MM          PIC 99.
@@ -127,8 +126,6 @@
            CLOSE LISTA.
            CLOSE REPORTE.
        9999-LEE-LISTA.
-           MOVE REG-NUMGPO TO WS-LAST-GPO
            READ LISTA AT END 
-           MOVE 1 TO WKS-EOF-LISTA
-           MOVE WS-LAST-GPO TO REG-NUMGPO.
+           MOVE 1 TO WKS-EOF-LISTA.
       
